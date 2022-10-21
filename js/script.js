@@ -1,19 +1,26 @@
 
 
-const pokemonCont = document.querySelector('.pokemon-container');
+const pokemonContainer = document.querySelector('.pokemon-container');
+const previous = document.querySelector('#previous');
+const next = document.querySelector('#next');
+
+let offset = 1;
+let limit = 8;
 
 async function getPokemon(id){
-
     let responseFromUrl = await fetch (`https://pokeapi.co/api/v2/pokemon/${id}`);
     let pokemon = await responseFromUrl.json();
+
+    console.log(pokemon);
 
     createPokemon(pokemon);
 }
 
 
-function getManyPokemons(number){
+function getManyPokemons(offset,limit){
 
-    for (let i = 1; i <= number; i++){
+    console.log(offset,limit);
+    for (let i = offset; i <= offset + limit; i++){
         getPokemon(i);
     }
 }
@@ -32,7 +39,7 @@ function createPokemon(pokemon){
     spriteCont.appendChild(sprite);
 
     const number  = document.createElement('p');
-    number.textContent = `#${pokemon.id.toString().padStart(1,0)}`
+    number.textContent = `#${pokemon.id.toString().padStart(2,0)}`
 
     const name = document.createElement('p');
     name.classList.add('name');
@@ -42,8 +49,34 @@ function createPokemon(pokemon){
     card.appendChild(number);
     card.appendChild(name);
 
-    pokemonCont.appendChild(card);
+    pokemonContainer.appendChild(card);
 
 }
 
-getManyPokemons(9);
+
+previous.addEventListener('click', () => {
+
+    if (offset != 1) {
+        offset -= 9;
+        reset();
+        getManyPokemons(offset,limit);
+    }
+   
+});
+
+next.addEventListener('click', () => {
+    offset += 9;
+    reset();
+    getManyPokemons(offset,limit);
+
+
+});
+
+
+function reset() {
+    return pokemonContainer.innerHTML = '';  
+
+};
+
+
+getManyPokemons(offset,limit);
